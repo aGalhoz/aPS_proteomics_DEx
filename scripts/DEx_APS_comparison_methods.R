@@ -106,7 +106,7 @@ plot_comparison_methods <- function(data_DEP_Perseus,name_comp){
           axis.line = element_line()) +
     ggtitle(paste0("Signed p-adjusted value plot comparison between DEP and Perseus for ",name_comp))+
     theme(plot.title = element_text(size = 15, face = "bold"))+
-    scale_x_continuous(breaks = seq(-50, 20, by = 5),limits = c(-3,3))+
+    scale_x_continuous(breaks = seq(-50, 20, by = 5))+
     scale_y_continuous(breaks = seq(-30, 140, by = 10))+
     xlab(paste0("DEP ",name_comp, " (sign(LFC) x -log10(p-adj))"))+
     theme(axis.title = element_text(size = 15, face = "bold"), axis.text=element_text(size=10, face = "bold"))+
