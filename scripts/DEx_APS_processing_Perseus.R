@@ -56,7 +56,11 @@ DE_FDR_0.1_Perseus <- DE_FDR_0.1_Perseus %>%
   mutate(`Student's T-test Difference Ctr_Synucleinopathy` = (-as.numeric(DE_FDR_0.1_Perseus$`Student's T-test Difference Ctr_Synucleinopathy`)),
          `Student's T-test Difference Ctr_Tauopathy` =  (- as.numeric(DE_FDR_0.1_Perseus$`Student's T-test Difference Ctr_Tauopathy`)),
          `Student's T-test Difference PD_Synucleinopathy` =  (- as.numeric(DE_FDR_0.1_Perseus$`Student's T-test Difference PD_Synucleinopathy`)),
-         `Student's T-test Difference PD_Tauopathy` = (- as.numeric(DE_FDR_0.1_Perseus$`Student's T-test Difference PD_Tauopathy`)))
+         `Student's T-test Difference PD_Tauopathy` = (- as.numeric(DE_FDR_0.1_Perseus$`Student's T-test Difference PD_Tauopathy`))) %>%
+  rename(`Student's T-test Significant Synucleinopathy_PD` = `Student's T-test Significant PD_Synucleinopathy`,
+         `Student's T-test Significant Synucleinopathy_Ctr` = `Student's T-test Significant Ctr_Synucleinopathy`,
+         `Student's T-test Significant Tauopathy_PD` = `Student's T-test Significant PD_Tauopathy`,
+         `Student's T-test Significant Tauopathy_Ctr` = `Student's T-test Significant Ctr_Tauopathy`)
 
 #writexl::write_xlsx(DE_FDR_0.05_Perseus,"DE_FDR_5%_Perseus.xlsx")
 
