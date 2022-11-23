@@ -197,6 +197,16 @@ heatmap_DEP(DEP_knn,"significant proteins")
 heatmap_DEP(DEP_MinProb,"significant proteins")
 heatmap_DEP(DEP_man,"significant proteins")
 
+# heatmap of top 100 most variant proteins clustered by CTR, PD, Synu
+heatmap_DEP(DEP_knn,"most variant",cluster = T)
+heatmap_DEP(DEP_MinProb,"most variant", cluster = T)
+heatmap_DEP(DEP_man,"most variant", cluster = T)
+
+# heatmap of significant proteins by CTR, PD, Synu
+heatmap_DEP(DEP_knn,"significant proteins", cluster = T)
+heatmap_DEP(DEP_MinProb,"significant proteins", cluster = T)
+heatmap_DEP(DEP_man,"significant proteins", cluster = T)
+
 # -> Ctr vs PD
 volcano_DEP(DEP_knn, contrast = "Ctr_vs_PD", label_size = 2, add_names = TRUE,adjusted = TRUE)
 volcano_DEP(DEP_MinProb, contrast = "Ctr_vs_PD", label_size = 2, add_names = TRUE,adjusted = TRUE)
@@ -368,13 +378,16 @@ scale_rows = function(x){
 }
 
 # heatmap of DEP data for top most variant proteins or only significant 
-heatmap_DEP <- function(DEP_data,type){
+heatmap_DEP <- function(DEP_data,type,cluster = F){
+  # default value is to not cluster by CTR, PD and Synu classes 
   if(type == "most variant"){ # top variant proteins
     TOPproteins <- head(order(rowVars(assay(DEP_data)),decreasing = T),100)
     col_title <- "Top 100 most variant proteins"
     row_names = F
   }else{ # only significant 
-    TOPproteins <- rowData(DEP_data, use.names = FALSE)$significant
+    TOPproteins_DEP <- which(rowData(DEP_data, use.names = FALSE)$significant,arr.ind = T)
+    TOPproteins_Perseus <- which(rowData(DEP_data)$Protein.IDs %in% DE_FDR_0.1_Perseus_sign$`Protein IDs`,arr.ind = T)
+    TOPproteins <- unique(c(TOPproteins_DEP,TOPproteins_Perseus))
     col_title <- "Significant proteins"
     row_names = T
   }
@@ -382,11 +395,30 @@ heatmap_DEP <- function(DEP_data,type){
   matrix.TOPproteins <- matrix.TOPproteins - rowMeans(matrix.TOPproteins)
   matrix.TOPprotein.score <- scale_rows(matrix.TOPproteins)
   annotation.protein <- as.data.frame(colData(DEP_data)[c("condition","Disease","Sex","age","Nfl_conc")])
+  protein_names <- rownames(matrix.TOPproteins) 
+  rownames(matrix.TOPproteins) <- lapply(strsplit(protein_names,"\\|"), function(x){
+    use <- x[3]
+    use_aux <- unlist(strsplit(use,"_"))
+    use_aux[1]})
   col.protein = list(condition = c("Ctr" = "#1887ab","PD" = "#eec76b", "Synucleinopathy" = "#93ae55", "Tauopathy" = "#d34467"),
                      Disease = c("CBD" = "#B098F2", "Ctr" = "#1887ab", "DLB" = "#ABB8A7", "MSA" = "#EAE29B", "PD" = "#eec76b", "PSP" = "#D69E9A"),
                      Sex = c("f" = "#E0A69C", "m" = "#9CD6E0"),
                      age = circlize::colorRamp2(c(30,90),c("#F7FBFF","#08519C")),
                      Nfl_conc = circlize::colorRamp2(c(714,41120),c("#FCFBFD","#3F007D")))
+  if(cluster){
+    annotation.protein$condition <- factor(annotation.protein$condition, 
+                                           levels = c("Ctr","PD","Synucleinopathy","Tauopathy"))
+    ComplexHeatmap::Heatmap(matrix.TOPproteins,name = "z-score",
+                            col = circlize::colorRamp2(c(-4,0,4),c("#9C0E47","#F5F5F5","#409E78")),
+                            top_annotation = HeatmapAnnotation(df = annotation.protein,
+                                                               col = col.protein),
+                            show_column_names = FALSE,show_row_names = row_names,
+                            show_column_dend = F, show_row_dend = T,
+                            cluster_columns = F,
+                            column_order = sort(colnames(matrix.TOPproteins)),
+                            column_title = col_title)
+  } 
+  else{
   ComplexHeatmap::Heatmap(matrix.TOPproteins,name = "z-score",
                           col = circlize::colorRamp2(c(-4,0,4),c("#9C0E47","#F5F5F5","#409E78")),
                           top_annotation = HeatmapAnnotation(df = annotation.protein,
@@ -395,6 +427,7 @@ heatmap_DEP <- function(DEP_data,type){
                           show_column_dend = T, show_row_dend = T,
                           cluster_columns = TRUE,
                           column_title = col_title)
+    }
 }
 
 # volcano plots (details to save pdf 10x8, hline log10 + 0.15, limits NA or 1.2)
