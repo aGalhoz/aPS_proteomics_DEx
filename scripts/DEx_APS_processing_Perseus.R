@@ -56,11 +56,7 @@ DE_FDR_0.1_Perseus <- DE_FDR_0.1_Perseus %>%
   mutate(`Student's T-test Difference Ctr_Synucleinopathy` = (-as.numeric(DE_FDR_0.1_Perseus$`Student's T-test Difference Ctr_Synucleinopathy`)),
          `Student's T-test Difference Ctr_Tauopathy` =  (- as.numeric(DE_FDR_0.1_Perseus$`Student's T-test Difference Ctr_Tauopathy`)),
          `Student's T-test Difference PD_Synucleinopathy` =  (- as.numeric(DE_FDR_0.1_Perseus$`Student's T-test Difference PD_Synucleinopathy`)),
-         `Student's T-test Difference PD_Tauopathy` = (- as.numeric(DE_FDR_0.1_Perseus$`Student's T-test Difference PD_Tauopathy`))) %>%
-  rename(`Student's T-test Significant Synucleinopathy_PD` = `Student's T-test Significant PD_Synucleinopathy`,
-         `Student's T-test Significant Synucleinopathy_Ctr` = `Student's T-test Significant Ctr_Synucleinopathy`,
-         `Student's T-test Significant Tauopathy_PD` = `Student's T-test Significant PD_Tauopathy`,
-         `Student's T-test Significant Tauopathy_Ctr` = `Student's T-test Significant Ctr_Tauopathy`)
+         `Student's T-test Difference PD_Tauopathy` = (- as.numeric(DE_FDR_0.1_Perseus$`Student's T-test Difference PD_Tauopathy`)))
 
 #writexl::write_xlsx(DE_FDR_0.05_Perseus,"DE_FDR_5%_Perseus.xlsx")
 
@@ -159,13 +155,14 @@ volcano_plot_perseus <- function(data,name_title){
                alpha = 0.5, 
                shape = 16,
                size = 4) + 
-    annotate(geom="text", x=-1.9, y=log10(10) + 0.15, label="FDR = 10%") +
+    annotate(geom="text", x=-1.9, y=log10(10) + 0.15, label="FDR = 10%",size = 5) +
     geom_label_repel(data = filter(df, significant == "+"),
                      aes(label = name),
                      force = 1,
                      nudge_y = 0.2,
                      nudge_x = 0.1,
-                     max.overlaps = 30) +
+                     max.overlaps = 30,
+                     size = 5) +
     scale_colour_manual(values = cols) + 
     scale_fill_manual(values = cols) + 
     scale_x_continuous(expand = c(0, 0), 
@@ -175,5 +172,11 @@ volcano_plot_perseus <- function(data,name_title){
          x = "log2(fold change)",
          y = expression(-log[10] ~ "(adjusted p-value)"),
          colour = "Differential \nExpression") +
-    theme_classic() # Select theme with a white background 
+    theme_classic() + # Select theme with a white background  
+    theme(axis.title.y = element_text(size = 18),
+          axis.title.x = element_text(size = 18),
+          axis.text = element_text(size = 14),
+          plot.title = element_text(size = 16, face = "bold",
+                                    hjust = 0.5),
+          text = element_text(size = 18))
 }

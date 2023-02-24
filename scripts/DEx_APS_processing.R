@@ -411,10 +411,21 @@ heatmap_DEP <- function(DEP_data,type,cluster = F){
     ComplexHeatmap::Heatmap(matrix.TOPproteins,name = "z-score",
                             col = circlize::colorRamp2(c(-4,0,4),c("#9C0E47","#F5F5F5","#409E78")),
                             top_annotation = HeatmapAnnotation(df = annotation.protein,
-                                                               col = col.protein),
+                                                               col = col.protein,
+                                                               annotation_name_gp= gpar(fontsize = 17),
+                                                               annotation_legend_param = list(labels_gp = gpar(fontsize = 17),
+                                                                                              title_gp = gpar(fontsize=18, fontface="bold"))),
+                            heatmap_legend_param=list(legend_width=unit(8,"cm"),
+                                                      title_gp=gpar(fontsize=18, fontface="bold"),
+                                                      labels_gp = gpar(fontsize = 17)),
                             show_column_names = FALSE,show_row_names = row_names,
                             show_column_dend = F, show_row_dend = T,
                             cluster_columns = F,
+                            column_names_gp = grid::gpar(fontsize = 17),
+                            column_dend_gp = gpar(fontsize = 17),
+                            column_title_gp = gpar(fontsize = 20,fontface = "bold"),
+                            row_title_gp = gpar(fontsize = 17),
+                            row_names_gp = gpar(fontsize = 15),
                             column_order = sort(colnames(matrix.TOPproteins)),
                             column_title = col_title)
   } 
@@ -422,9 +433,20 @@ heatmap_DEP <- function(DEP_data,type,cluster = F){
   ComplexHeatmap::Heatmap(matrix.TOPproteins,name = "z-score",
                           col = circlize::colorRamp2(c(-4,0,4),c("#9C0E47","#F5F5F5","#409E78")),
                           top_annotation = HeatmapAnnotation(df = annotation.protein,
-                                                             col = col.protein),
+                                                             col = col.protein,
+                                                             annotation_name_gp= gpar(fontsize = 17),
+                                                             annotation_legend_param = list(labels_gp = gpar(fontsize = 17),
+                                                                                            title_gp = gpar(fontsize=18, fontface="bold"))),
+                          heatmap_legend_param=list(legend_width=unit(8,"cm"),
+                                                    title_gp=gpar(fontsize=18, fontface="bold"),
+                                                    labels_gp = gpar(fontsize = 17)),
                           show_column_names = FALSE,show_row_names = row_names,
                           show_column_dend = T, show_row_dend = T,
+                          column_names_gp = grid::gpar(fontsize = 17),
+                          column_dend_gp = gpar(fontsize = 17),
+                          column_title_gp = gpar(fontsize = 20,fontface = "bold"),
+                          row_title_gp = gpar(fontsize = 17),
+                          row_names_gp = gpar(fontsize = 15),
                           cluster_columns = TRUE,
                           column_title = col_title)
     }
@@ -512,12 +534,13 @@ volcano_DEP <- function (dep, contrast, label_size = 3, add_names = TRUE, adjust
                alpha = 0.5, 
                shape = 16,
                size = 4) + 
-    annotate(geom="text", x=-1.9, y=log10(10) + 0.15, label="FDR = 10%") +
+    annotate(geom="text", x=-1.9, y=log10(10) + 0.15, label="FDR = 10%",size = 5) +
     geom_label_repel(data = filter(df, significant),
                      aes(label = name),
                      force = 0.3,
                      nudge_x = 0.5,
-                     nudge_y = 0.1) +
+                     nudge_y = 0.1,
+                     size = 5) +
     scale_colour_manual(values = cols) + 
     scale_fill_manual(values = cols) + 
     scale_x_continuous(expand = c(0, 0), 
@@ -527,7 +550,13 @@ volcano_DEP <- function (dep, contrast, label_size = 3, add_names = TRUE, adjust
          x = "log2(fold change)",
          y = expression(-log[10] ~ "(adjusted p-value)"),
          colour = "Differential \nExpression") +
-    theme_classic() # Select theme with a white background  
+    theme_classic() + # Select theme with a white background  
+    theme(axis.title.y = element_text(size = 18),
+          axis.title.x = element_text(size = 18),
+          axis.text = element_text(size = 14),
+          plot.title = element_text(size = 16, face = "bold",
+                                    hjust = 0.5),
+          text = element_text(size = 18))
   if (plot) {
     return(p)
   }
